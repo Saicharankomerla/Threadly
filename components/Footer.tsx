@@ -4,7 +4,7 @@ export default function Footer() {
       <div className="mx-auto max-w-6xl px-4 py-10 grid gap-8 sm:grid-cols-3">
         <div>
           <h3 className="text-xs font-medium uppercase tracking-widest text-ink/50 mb-3">
-            Threadly
+            Komerla
           </h3>
           <p className="text-sm text-ink/70 leading-relaxed">
             A one-person clothing shop. I buy what you order and deliver it
@@ -43,7 +43,7 @@ export default function Footer() {
 
       <div className="border-t border-line">
         <p className="mx-auto max-w-6xl px-4 py-4 text-xs text-ink/40">
-          © {new Date().getFullYear()} Threadly. All orders arranged directly, no payment gateway.
+          © {new Date().getFullYear()} Komerla. All orders arranged directly, no payment gateway.
         </p>
       </div>
     </footer>

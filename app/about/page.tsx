@@ -1,11 +1,11 @@
 export default function AboutPage() {
   return (
     <div className="max-w-2xl">
-      <h1 className="font-display text-3xl mb-6">About Threadly</h1>
+      <h1 className="font-display text-3xl mb-6">About Komerla</h1>
 
       <div className="space-y-5 text-ink/80 leading-relaxed">
         <p>
-          Threadly is a one-person clothing shop. There's no warehouse, no
+          Komerla is a one-person clothing shop. There's no warehouse, no
           call center, and no marketplace taking a cut — just me, sourcing
           pieces I think are worth wearing and bringing them to your door
           myself.
@@ -25,7 +25,7 @@ export default function AboutPage() {
           <li>You pay cash or UPI when it arrives</li>
         </ol>
 
-        <h2 className="font-display text-xl pt-4">Why Threadly</h2>
+        <h2 className="font-display text-xl pt-4">Why Komerla</h2>
         <p>
           No middlemen, no marketplace markup, no guessing whether a seller
           is legitimate. Every order is handled personally, start to finish.

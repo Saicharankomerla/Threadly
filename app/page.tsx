@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import ProductCard from "@/components/ProductCard";
 import Hero from "@/components/Hero";
+import CollectionTiles from "@/components/CollectionTiles";
 import Link from "next/link";
 
 export const dynamic = "force-dynamic";
@@ -18,6 +19,7 @@ export default async function CatalogPage() {
   return (
     <div>
       <Hero product={heroProduct} />
+      <CollectionTiles />
 
       <div className="mb-6 flex items-end justify-between border-b border-line pb-3">
         <h2 className="font-display text-2xl">New in</h2>

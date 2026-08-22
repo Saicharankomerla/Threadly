@@ -6,7 +6,7 @@ import Footer from "@/components/Footer";
 import { CartProvider } from "@/lib/cart-context";
 
 export const metadata: Metadata = {
-  title: "Threadly",
+  title: "Komerla",
   description: "Order clothing, delivered by hand.",
 };
 

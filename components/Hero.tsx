@@ -11,7 +11,7 @@ type HeroProduct = {
 export default function Hero({ product }: { product: HeroProduct | null }) {
   return (
     <section className="relative -mx-4 sm:-mx-6 md:mx-0 mb-12 md:mb-16">
-      <div className="relative aspect-[4/5] sm:aspect-[16/9] md:aspect-[21/9] w-full overflow-hidden bg-ink">
+      <div className="relative aspect-[4/5] sm:aspect-[16/10] md:aspect-[16/7] w-full overflow-hidden bg-ink">
         {product?.image_url ? (
           <Image
             src={product.image_url}

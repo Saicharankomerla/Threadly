@@ -150,7 +150,7 @@ export async function POST(req: NextRequest) {
         .join("");
 
       await resend.emails.send({
-        from: "Threadly Orders <onboarding@resend.dev>",
+        from: "Komerla Orders <onboarding@resend.dev>",
         to: process.env.ADMIN_EMAIL,
         subject: `New order — ${orderItemsToInsert.length} item(s), ₹${total.toFixed(2)}`,
         html: `

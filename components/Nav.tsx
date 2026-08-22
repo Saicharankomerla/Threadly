@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { createClient } from "@/lib/supabase/server";
 import SignOutButton from "./SignOutButton";
 import CartIcon from "./CartIcon";
@@ -26,53 +27,61 @@ export default async function Nav() {
 
   return (
     <header className="border-b border-line bg-paper/95 backdrop-blur sticky top-0 z-20">
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-4">
-        <div className="flex items-center gap-10">
-          <Link href="/" className="font-display text-2xl tracking-tight py-5">
-            Threadly
-          </Link>
-
-          <nav className="flex items-center gap-8">
-            <div className="group relative h-full">
-              <Link href="/" className={linkClass}>
-                Men
-              </Link>
-              <div className="absolute left-0 top-full hidden w-72 border border-line bg-paper shadow-lg group-hover:block">
-                <div className="flex flex-col py-4">
+      <div className="grid grid-cols-[1fr_auto_1fr] items-center px-6">
+        <nav className="flex items-center gap-8 justify-self-start">
+          <div className="group relative h-full">
+            <Link href="/" className={linkClass}>
+              Men
+            </Link>
+            <div className="absolute left-0 top-full hidden w-72 border border-line bg-paper shadow-lg group-hover:block">
+              <div className="flex flex-col py-4">
+                <Link
+                  href="/"
+                  className="px-5 py-2 text-xs uppercase tracking-widest text-ink/70 hover:text-ink hover:bg-line/30"
+                >
+                  New in
+                </Link>
+                {CATEGORIES.map((cat) => (
                   <Link
-                    href="/"
+                    key={cat}
+                    href={`/?category=${encodeURIComponent(cat)}`}
                     className="px-5 py-2 text-xs uppercase tracking-widest text-ink/70 hover:text-ink hover:bg-line/30"
                   >
-                    New in
+                    {cat}
                   </Link>
-                  {CATEGORIES.map((cat) => (
-                    <Link
-                      key={cat}
-                      href={`/?category=${encodeURIComponent(cat)}`}
-                      className="px-5 py-2 text-xs uppercase tracking-widest text-ink/70 hover:text-ink hover:bg-line/30"
-                    >
-                      {cat}
-                    </Link>
-                  ))}
-                </div>
+                ))}
               </div>
             </div>
+          </div>
 
-            <Link href="/" className={linkClass}>
-              Home
+          <Link href="/" className={linkClass}>
+            Home
+          </Link>
+          {role === "admin" && (
+            <Link href="/admin" className={linkClass}>
+              Admin
             </Link>
-            {role === "admin" && (
-              <Link href="/admin" className={linkClass}>
-                Admin
-              </Link>
-            )}
-            <Link href="/about" className={linkClass}>
-              About us
-            </Link>
-          </nav>
-        </div>
+          )}
+          <Link href="/about" className={linkClass}>
+            About us
+          </Link>
+        </nav>
 
-        <div className="flex items-center gap-5">
+        <Link
+          href="/"
+          className="flex items-center gap-3 py-4 justify-self-center"
+          aria-label="Komerla — Fashion House"
+        >
+          <Image src="/logo.png" alt="" width={56} height={40} priority />
+          <span className="flex flex-col leading-none">
+            <span className="font-display text-xl tracking-wide">KOMERLA</span>
+            <span className="text-[10px] uppercase tracking-[0.3em] text-ink/50 mt-1">
+              Fashion House
+            </span>
+          </span>
+        </Link>
+
+        <div className="flex items-center gap-5 justify-self-end">
           <button
             aria-label="Wishlist"
             className="text-ink/70 hover:text-ink"
