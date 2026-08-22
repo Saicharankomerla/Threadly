@@ -3,11 +3,13 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useCart } from "@/lib/cart-context";
 
 type Product = {
   id: string;
   name: string;
   price: number;
+  image_url: string | null;
   sizes: string[];
   stock: number;
 };
@@ -20,13 +22,10 @@ export default function OrderForm({
   isLoggedIn: boolean;
 }) {
   const router = useRouter();
+  const { addItem } = useCart();
   const [size, setSize] = useState(product.sizes?.[0] ?? "");
   const [quantity, setQuantity] = useState(1);
-  const [address, setAddress] = useState("");
-  const [phone, setPhone] = useState("");
-  const [notes, setNotes] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [added, setAdded] = useState(false);
 
   const outOfStock = product.stock <= 0;
 
@@ -36,47 +35,27 @@ export default function OrderForm({
         <Link href={`/login?redirect=/products/${product.id}`} className="text-thread underline font-medium">
           Log in
         </Link>{" "}
-        to place an order for this item.
+        to add this item to your bag.
       </div>
     );
   }
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
-
-    try {
-      const res = await fetch("/api/orders", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          product_id: product.id,
-          size,
-          quantity,
-          delivery_address: address,
-          phone,
-          notes,
-        }),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        setError(data.error || "Something went wrong placing your order.");
-        setLoading(false);
-        return;
-      }
-
-      router.push(`/orders/${data.order_id}?placed=1`);
-    } catch (err) {
-      setError("Network error — please try again.");
-      setLoading(false);
-    }
+  function handleAddToBag() {
+    addItem({
+      product_id: product.id,
+      name: product.name,
+      price: Number(product.price),
+      image_url: product.image_url,
+      size: size || null,
+      quantity,
+      stock: product.stock,
+    });
+    setAdded(true);
+    setTimeout(() => setAdded(false), 2000);
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <div className="space-y-4">
       {product.sizes && product.sizes.length > 0 && (
         <div>
           <label className="label">Size</label>
@@ -104,57 +83,37 @@ export default function OrderForm({
         <input
           type="number"
           min={1}
+          max={product.stock}
           className="input w-24"
           value={quantity}
-          onChange={(e) => setQuantity(Math.max(1, Number(e.target.value)))}
+          onChange={(e) =>
+            setQuantity(Math.max(1, Math.min(product.stock, Number(e.target.value))))
+          }
         />
       </div>
-
-      <div>
-        <label className="label">Delivery address</label>
-        <textarea
-          required
-          className="input"
-          rows={3}
-          value={address}
-          onChange={(e) => setAddress(e.target.value)}
-        />
-      </div>
-
-      <div>
-        <label className="label">Phone number</label>
-        <input
-          type="tel"
-          required
-          className="input"
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
-        />
-      </div>
-
-      <div>
-        <label className="label">Notes (optional)</label>
-        <textarea
-          className="input"
-          rows={2}
-          placeholder="Color preference, delivery time window, etc."
-          value={notes}
-          onChange={(e) => setNotes(e.target.value)}
-        />
-      </div>
-
-      {error && <p className="text-sm text-red-600">{error}</p>}
 
       <button
-        type="submit"
-        disabled={loading || outOfStock}
+        type="button"
+        onClick={handleAddToBag}
+        disabled={outOfStock}
         className="btn-primary w-full"
       >
-        {outOfStock ? "Out of stock" : loading ? "Placing order…" : "Place order"}
+        {outOfStock ? "Out of stock" : added ? "Added to bag ✓" : "Add to bag"}
       </button>
+
+      {added && (
+        <button
+          type="button"
+          onClick={() => router.push("/cart")}
+          className="text-xs uppercase tracking-widest text-thread underline w-full text-center block"
+        >
+          View bag →
+        </button>
+      )}
+
       <p className="text-xs text-ink/50">
         Payment is cash/UPI on delivery, arranged directly with you.
       </p>
-    </form>
+    </div>
   );
 }
