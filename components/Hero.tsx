@@ -10,7 +10,7 @@ type HeroProduct = {
 
 export default function Hero({ product }: { product: HeroProduct | null }) {
   return (
-    <section className="relative -mx-4 sm:-mx-6 md:mx-0 mb-12 md:mb-16">
+    <section className="relative left-1/2 right-1/2 -mx-[50vw] w-screen mb-12 md:mb-16">
       <div className="relative aspect-[4/5] sm:aspect-[16/10] md:aspect-[16/7] w-full overflow-hidden bg-ink">
         {product?.image_url ? (
           <Image
@@ -31,7 +31,7 @@ export default function Hero({ product }: { product: HeroProduct | null }) {
             New arrivals
           </p>
           <h1 className="font-display text-paper text-3xl sm:text-4xl md:text-5xl max-w-md leading-tight">
-            Hand-picked. Hand-delivered.
+             Traditional wear.
           </h1>
           <p className="text-paper/80 text-sm sm:text-base mt-3 max-w-sm">
             I personally source every piece and bring it to your door.

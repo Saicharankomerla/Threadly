@@ -31,7 +31,7 @@ const TILES: Tile[] = [
 
 export default function CollectionTiles() {
   return (
-    <section className="mb-12 md:mb-16 grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <section className="relative left-1/2 right-1/2 -mx-[50vw] w-screen mb-12 md:mb-16 grid grid-cols-1 sm:grid-cols-2 gap-4">
       {TILES.map((tile) => (
         <Link
           key={tile.title}

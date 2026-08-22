@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import ProductCard from "@/components/ProductCard";
-import Hero from "@/components/Hero";
+import HeroCarousel from "@/components/HeroCarousel";
 import CollectionTiles from "@/components/CollectionTiles";
 import Link from "next/link";
 
@@ -18,7 +18,7 @@ export default async function CatalogPage() {
 
   return (
     <div>
-      <Hero product={heroProduct} />
+      <HeroCarousel product={heroProduct} />
       <CollectionTiles />
 
       <div className="mb-6 flex items-end justify-between border-b border-line pb-3">
