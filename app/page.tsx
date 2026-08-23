@@ -3,7 +3,8 @@ import ProductCard from "@/components/ProductCard";
 import HeroCarousel from "@/components/HeroCarousel";
 import CollectionTiles from "@/components/CollectionTiles";
 import Link from "next/link";
-
+import FeaturedCategories from "@/components/FeaturedCategories";
+import { CATEGORIES } from "@/lib/categories";
 export const dynamic = "force-dynamic";
 
 export default async function CatalogPage() {
@@ -15,11 +16,13 @@ export default async function CatalogPage() {
     .order("created_at", { ascending: false });
 
   const heroProduct = products?.find((p) => p.image_url) ?? null;
+  const categoryImages = await Promise.all( CATEGORIES.map(async (category) => { const { data } = await supabase .from("products") .select("image_url") .eq("is_active", true) .eq("category", category) .not("image_url", "is", null) .order("created_at", { ascending: false }) .limit(1); return { category, imageUrl: data?.[0]?.image_url ?? null }; }) );
 
   return (
     <div>
       <HeroCarousel product={heroProduct} />
       <CollectionTiles />
+      <FeaturedCategories images={categoryImages} />
 
       <div className="mb-6 flex items-end justify-between border-b border-line pb-3">
         <h2 className="font-display text-2xl">New in</h2>

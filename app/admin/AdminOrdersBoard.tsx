@@ -58,15 +58,25 @@ export default function AdminOrdersBoard({ initialOrders }: { initialOrders: Ord
   }, [supabase]);
 
   async function updateStatus(orderId: string, status: OrderStatus) {
-    setUpdating(orderId);
-    const { error } = await supabase.from("orders").update({ status }).eq("id", orderId);
+  setUpdating(orderId);
+  try {
+    const res = await fetch("/api/orders/update-status", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ order_id: orderId, status }),
+    });
+    const data = await res.json();
     setUpdating(null);
-    if (error) {
-      alert(`Could not update status: ${error.message}`);
+    if (!res.ok) {
+      alert(`Could not update status: ${data.error || "unknown error"}`);
       return;
     }
     setOrders((prev) => prev.map((o) => (o.id === orderId ? { ...o, status } : o)));
+  } catch {
+    setUpdating(null);
+    alert("Network error updating status.");
   }
+}
 
   return (
     <div>

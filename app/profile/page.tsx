@@ -27,14 +27,20 @@ export default async function ProfilePage() {
       <h1 className="font-display text-2xl mb-6">Profile</h1>
       <ProfileForm profile={profile} />
 
-      <div className="mt-10 border-t border-line pt-6">
-        <Link
-          href="/orders"
-          className="text-xs uppercase tracking-widest text-ink/60 hover:text-ink"
-        >
-          View my orders →
-        </Link>
-      </div>
+      <div className="mt-10 border-t border-line pt-6 space-y-3">
+  <Link
+    href="/orders"
+    className="block text-xs uppercase tracking-widest text-ink/60 hover:text-ink"
+  >
+    View my orders →
+  </Link>
+  <Link
+    href="/orders"
+    className="block text-xs uppercase tracking-widest text-ink/60 hover:text-ink"
+  >
+    Track my order →
+  </Link>
+</div>
     </div>
   );
 }

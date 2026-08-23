@@ -3,9 +3,7 @@ import Image from "next/image";
 import { createClient } from "@/lib/supabase/server";
 import SignOutButton from "./SignOutButton";
 import CartIcon from "./CartIcon";
-
-const CATEGORIES = ["Shirts", "Bottom wear", "Shoes", "Watches"];
-
+import { CATEGORIES } from "@/lib/categories";
 export default async function Nav() {
   const supabase = createClient();
   const {
