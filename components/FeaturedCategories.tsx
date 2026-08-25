@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { CATEGORIES } from "@/lib/categories";
+import { CATEGORIES, categoryToSlug } from "@/lib/categories";
 
 type CategoryImage = {
   category: string;
@@ -25,7 +25,7 @@ export default function FeaturedCategories({
           return (
             <Link
               key={category}
-              href={`/?category=${encodeURIComponent(category)}#catalog`}
+              href={`/category/${categoryToSlug(category)}`}
               className="group"
             >
               <p className="font-display text-lg mb-2">{category}</p>
