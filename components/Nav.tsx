@@ -42,7 +42,7 @@ export default async function Nav() {
                 {CATEGORIES.map((cat) => (
                   <Link
                     key={cat}
-                    href={`/?category=${categoryToSlug(cat)}`}
+                    href={`/category/${categoryToSlug(cat)}`}
                     className="px-5 py-2 text-xs uppercase tracking-widest text-ink/70 hover:text-ink hover:bg-line/30"
                   >
                     {cat}
