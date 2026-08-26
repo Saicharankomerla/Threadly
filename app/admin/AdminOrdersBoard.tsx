@@ -95,7 +95,15 @@ export default function AdminOrdersBoard({ initialOrders }: { initialOrders: Ord
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
                 <p className="text-sm text-ink/50">
-                  {new Date(order.created_at).toLocaleString()} · #{order.id.slice(0, 8)}
+                  {new Date(order.created_at).toLocaleString("en-IN", {
+  day: "2-digit",
+  month: "2-digit",
+  year: "numeric",
+  hour: "2-digit",
+  minute: "2-digit",
+  second: "2-digit",
+  hour12: true,
+})} · #{order.id.slice(0, 8)}
                 </p>
                 <p className="font-medium mt-0.5">
                   {order.profiles?.full_name || order.profiles?.email || "Customer"}

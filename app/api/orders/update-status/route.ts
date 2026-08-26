@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { createClient, createServiceRoleClient } from "@/lib/supabase/server";
 import { Resend } from "resend";
 import { ORDER_STATUSES, OrderStatus, STATUS_LABELS } from "@/lib/status";
 
@@ -62,7 +62,7 @@ export async function POST(req: NextRequest) {
     .from("orders")
     .update({ status })
     .eq("id", order_id)
-    .select("id, status, customer_id, profiles(email, full_name)")
+    .select("id, status, customer_id")
     .single();
 
   if (updateError || !order) {
@@ -76,8 +76,28 @@ export async function POST(req: NextRequest) {
   // Never blocks the response — a failed email doesn't undo the status update.
   try {
     const message = CUSTOMER_MESSAGES[status as OrderStatus];
-    const customerProfile: any = Array.isArray(order.profiles) ? order.profiles[0] : order.profiles;
-    const customerEmail = customerProfile?.email;
+    console.log("[update-status] status received:", status);
+    console.log("[update-status] message found for this status:", !!message);
+
+    // The customer's profile row is only readable by the customer themselves
+    // under RLS — the admin's regular client can't see it, and that failure
+    // is silent (profiles comes back null, not an error). Use the
+    // service-role client for this one lookup so it isn't blocked.
+    let customerEmail: string | undefined;
+    if (message) {
+      const serviceClient = createServiceRoleClient();
+      const { data: customerProfile, error: profileError } = await serviceClient
+        .from("profiles")
+        .select("email")
+        .eq("id", order.customer_id)
+        .single();
+      console.log("[update-status] customer_id looked up:", order.customer_id);
+      console.log("[update-status] profile fetch error:", profileError);
+      console.log("[update-status] profile fetch result:", customerProfile);
+      customerEmail = customerProfile?.email;
+    }
+    console.log("[update-status] RESEND_API_KEY present:", !!process.env.RESEND_API_KEY);
+    console.log("[update-status] final customerEmail used:", customerEmail);
 
     if (message && customerEmail && process.env.RESEND_API_KEY) {
       const resend = new Resend(process.env.RESEND_API_KEY);
@@ -94,6 +114,10 @@ export async function POST(req: NextRequest) {
           <p>Check your order status anytime: <a href="${trackUrl}">${trackUrl}</a></p>
         `,
       });
+    } else if (message && !customerEmail) {
+      console.error(
+        `Status update email skipped: no email found for customer ${order.customer_id}`
+      );
     }
   } catch (emailError) {
     console.error("Status update email failed to send:", emailError);
