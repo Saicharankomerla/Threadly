@@ -2,7 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import OrderForm from "./OrderForm";
-import WishlistButton from "@/components/WishlistButton";
+import WishlistButton from "@/components/wishlistButton";
 
 export const dynamic = "force-dynamic";
 

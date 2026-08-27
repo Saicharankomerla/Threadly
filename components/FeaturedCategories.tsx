@@ -7,12 +7,20 @@ type CategoryImage = {
   imageUrl: string | null;
 };
 
+// Categories that are fully live (nav, category pages, product tagging)
+// but aren't ready to show on the homepage grid yet — no products/photos
+// tagged for them so far. Remove an entry here once it's ready to show.
+const HIDDEN_FROM_HOMEPAGE = ["College wear", "Modern Classics"];
+
 export default function FeaturedCategories({
   images,
 }: {
   images: CategoryImage[];
 }) {
   const imageByCategory = new Map(images.map((i) => [i.category, i.imageUrl]));
+  const homepageCategories = CATEGORIES.filter(
+    (category) => !HIDDEN_FROM_HOMEPAGE.includes(category)
+  );
 
   return (
     <section className="mb-12 md:mb-16">
@@ -20,7 +28,7 @@ export default function FeaturedCategories({
         Featured categories
       </h2>
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        {CATEGORIES.map((category) => {
+        {homepageCategories.map((category) => {
           const imageUrl = imageByCategory.get(category) ?? null;
           return (
             <Link

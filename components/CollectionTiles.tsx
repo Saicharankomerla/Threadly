@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { categoryToSlug } from "@/lib/categories";
 
 type Tile = {
   title: string;
@@ -12,9 +13,9 @@ type Tile = {
 
 const TILES: Tile[] = [
   {
-    title: "New Collection",
+    title: "College Wear",
     subtitle: "Fresh arrivals, hand-picked",
-    href: "/",
+    href: `/category/${categoryToSlug("College wear")}`,
     imageUrl: "/collections/newcollection.jpg",
     gradientFrom: "from-clay",
     gradientTo: "to-ink",
@@ -22,7 +23,7 @@ const TILES: Tile[] = [
   {
     title: "Modern Classics",
     subtitle: "The everyday edit",
-    href: "/",
+    href: `/category/${categoryToSlug("Modern Classics")}`,
     imageUrl: "/collections/essentials.jpg",
     gradientFrom: "from-thread",
     gradientTo: "to-ink",

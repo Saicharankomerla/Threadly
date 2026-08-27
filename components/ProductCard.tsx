@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import WishlistButton from "./WishlistButton";
+import WishlistButton from "./wishlistButton";
 
 type Product = {
   id: string;

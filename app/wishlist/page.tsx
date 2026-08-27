@@ -2,7 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import WishlistButton from "@/components/WishlistButton";
+import WishlistButton from "@/components/wishlistButton";
 
 export default async function WishlistPage() {
   const supabase = createClient();

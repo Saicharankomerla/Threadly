@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { categoryToSlug } from "@/lib/categories";
 
 type HeroProduct = {
   id: string;
@@ -28,7 +29,7 @@ export default function HeroCarousel({ product }: { product: HeroProduct | null 
       label: "New arrivals",
       headline: "Traditional wear.",
       description: "Looks great for your special events.",
-      href: product ? `/products/${product.id}` : "/",
+      href: `/category/${categoryToSlug("Traditional wear")}`,
       imageUrl: "/hero-1.jpg",
       gradientFrom: "from-ink",
       gradientTo: "to-thread",
