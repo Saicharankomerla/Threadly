@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient, createServiceRoleClient } from "@/lib/supabase/server";
 import { Resend } from "resend";
+import crypto from "crypto";
 
 type CartItemInput = {
   product_id: string;
@@ -24,6 +25,37 @@ export async function POST(req: NextRequest) {
   // (product_id/size/quantity) or a multi-item bag payload (items: [...]).
   const body = await req.json();
   const { delivery_address, phone, notes } = body;
+  const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = body;
+
+  if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
+    return NextResponse.json(
+      { error: "Payment information is missing." },
+      { status: 400 }
+    );
+  }
+
+  if (!process.env.RAZORPAY_KEY_SECRET) {
+    return NextResponse.json(
+      { error: "Payment gateway is not configured." },
+      { status: 500 }
+    );
+  }
+
+  // Verify the payment is genuine and actually came from Razorpay. This
+  // signature can only be produced by someone who has the Key Secret, which
+  // never leaves the server — so a forged request from the browser will
+  // always fail this check.
+  const expectedSignature = crypto
+    .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
+    .update(`${razorpay_order_id}|${razorpay_payment_id}`)
+    .digest("hex");
+
+  if (expectedSignature !== razorpay_signature) {
+    return NextResponse.json(
+      { error: "Payment verification failed." },
+      { status: 400 }
+    );
+  }
 
   const rawItems: CartItemInput[] = Array.isArray(body.items)
     ? body.items
@@ -105,6 +137,9 @@ export async function POST(req: NextRequest) {
       delivery_address,
       phone,
       notes: notes || null,
+      payment_status: "paid",
+      razorpay_order_id,
+      razorpay_payment_id,
     })
     .select()
     .single();
@@ -154,9 +189,9 @@ export async function POST(req: NextRequest) {
         to: process.env.ADMIN_EMAIL,
         subject: `New order — ${orderItemsToInsert.length} item(s), ₹${total.toFixed(2)}`,
         html: `
-          <h2>New order placed</h2>
+          <h2>New order placed — payment received</h2>
           <ul>${itemsHtml}</ul>
-          <p><strong>Total:</strong> ₹${total.toFixed(2)}</p>
+          <p><strong>Total:</strong> ₹${total.toFixed(2)} (paid online via Razorpay)</p>
           <p><strong>Customer email:</strong> ${user.email}</p>
           <p><strong>Delivery address:</strong> ${delivery_address}</p>
           <p><strong>Phone:</strong> ${phone}</p>
@@ -173,3 +208,4 @@ export async function POST(req: NextRequest) {
 
   return NextResponse.json({ order_id: order.id }, { status: 201 });
 }
+

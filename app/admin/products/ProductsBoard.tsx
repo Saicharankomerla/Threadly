@@ -13,6 +13,7 @@ type Product = {
   image_url: string | null;
   category: string | null;
   is_active: boolean;
+  is_category_image: boolean;
 };
 
 const emptyForm = {
@@ -23,6 +24,7 @@ const emptyForm = {
   stock: "",
   image_url: "",
   category: "",
+  is_category_image: false,
 };
 
 export default function ProductsBoard({ initialProducts }: { initialProducts: Product[] }) {
@@ -43,6 +45,7 @@ export default function ProductsBoard({ initialProducts }: { initialProducts: Pr
       stock: String(p.stock),
       image_url: p.image_url ?? "",
       category: p.category ?? "",
+      is_category_image: p.is_category_image ?? false,
     });
   }
 
@@ -67,6 +70,7 @@ export default function ProductsBoard({ initialProducts }: { initialProducts: Pr
       stock: Number(form.stock),
       image_url: form.image_url || null,
       category: form.category || null,
+      is_category_image: form.is_category_image,
     };
 
     if (!payload.name || Number.isNaN(payload.price) || Number.isNaN(payload.stock)) {
@@ -179,6 +183,19 @@ export default function ProductsBoard({ initialProducts }: { initialProducts: Pr
             onChange={(e) => setForm({ ...form, category: e.target.value })}
           />
         </div>
+        <div className="flex items-center gap-2">
+          <input
+            type="checkbox"
+            id="is_category_image"
+            checked={form.is_category_image}
+            onChange={(e) =>
+              setForm({ ...form, is_category_image: e.target.checked })
+            }
+          />
+          <label htmlFor="is_category_image" className="label mb-0">
+            Use this product's photo as the category tile image
+          </label>
+        </div>
         <div>
           <label className="label">Image URL</label>
           <input
@@ -224,6 +241,11 @@ export default function ProductsBoard({ initialProducts }: { initialProducts: Pr
                   {p.name}{" "}
                   {!p.is_active && (
                     <span className="status-pill bg-line text-ink/60 ml-1">Inactive</span>
+                  )}
+                  {p.is_category_image && (
+                    <span className="status-pill bg-line text-ink/60 ml-1">
+                      Category image
+                    </span>
                   )}
                 </p>
                 <p className="text-sm text-ink/60">

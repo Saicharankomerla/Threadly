@@ -16,7 +16,34 @@ export default async function CatalogPage() {
     .order("created_at", { ascending: false });
 
   const heroProduct = products?.find((p) => p.image_url) ?? null;
-  const categoryImages = await Promise.all( CATEGORIES.map(async (category) => { const { data } = await supabase .from("products") .select("image_url") .eq("is_active", true) .eq("category", category) .not("image_url", "is", null) .order("created_at", { ascending: false }) .limit(1); return { category, imageUrl: data?.[0]?.image_url ?? null }; }) );
+  const categoryImages = await Promise.all(
+    CATEGORIES.map(async (category) => {
+      const pinned = await supabase
+        .from("products")
+        .select("image_url")
+        .eq("is_active", true)
+        .eq("category", category)
+        .eq("is_category_image", true)
+        .not("image_url", "is", null)
+        .order("created_at", { ascending: false })
+        .limit(1);
+
+      if (pinned.data && pinned.data.length > 0) {
+        return { category, imageUrl: pinned.data[0].image_url ?? null };
+      }
+
+      const fallback = await supabase
+        .from("products")
+        .select("image_url")
+        .eq("is_active", true)
+        .eq("category", category)
+        .not("image_url", "is", null)
+        .order("created_at", { ascending: false })
+        .limit(1);
+
+      return { category, imageUrl: fallback.data?.[0]?.image_url ?? null };
+    })
+  );
 
   return (
     <div>
