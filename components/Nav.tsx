@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import SignOutButton from "./SignOutButton";
 import CartIcon from "./CartIcon";
 import SearchBar from "./SearchBar";
+import AdminOrdersBadge from "./AdminOrdersBadge";
 import { CATEGORIES, categoryToSlug } from "@/lib/categories";
 export default async function Nav() {
   const supabase = createClient();
@@ -13,6 +14,7 @@ export default async function Nav() {
 
   let role: string | null = null;
   let wishlistCount = 0;
+  let pendingOrdersCount = 0;
   if (user) {
     const { data: profile } = await supabase
       .from("profiles")
@@ -26,6 +28,14 @@ export default async function Nav() {
       .select("id", { count: "exact", head: true })
       .eq("customer_id", user.id);
     wishlistCount = count ?? 0;
+
+    if (role === "admin") {
+      const { count: pendingCount } = await supabase
+        .from("orders")
+        .select("id", { count: "exact", head: true })
+        .eq("status", "pending");
+      pendingOrdersCount = pendingCount ?? 0;
+    }
   }
 
   const linkClass =
@@ -35,10 +45,6 @@ export default async function Nav() {
     <header className="border-b border-line bg-paper/95 backdrop-blur sticky top-0 z-20">
       <div className="grid grid-cols-[1fr_auto_1fr] items-center px-6">
         <nav className="flex items-center gap-8 justify-self-start">
-          <Link href="/" className={linkClass}>
-            Home
-          </Link>
-
           <div className="group relative h-full">
             <Link href="/" className={linkClass}>
               Men
@@ -64,10 +70,39 @@ export default async function Nav() {
             </div>
           </div>
 
+          <Link href="/" className={linkClass}>
+            Home
+          </Link>
           {role === "admin" && (
-            <Link href="/admin" className={linkClass}>
-              Admin
-            </Link>
+            <div className="group relative h-full">
+              <span className={`${linkClass} inline-flex items-center cursor-pointer`}>
+                Admin
+                <AdminOrdersBadge initialCount={pendingOrdersCount} />
+              </span>
+              <div className="absolute left-0 top-full hidden w-56 border border-line bg-paper shadow-lg group-hover:block">
+                <div className="flex flex-col py-4">
+                  <Link
+                    href="/admin"
+                    className="px-5 py-2 text-xs uppercase tracking-widest text-ink/70 hover:text-ink hover:bg-line/30 inline-flex items-center justify-between"
+                  >
+                    Orders
+                    <AdminOrdersBadge initialCount={pendingOrdersCount} />
+                  </Link>
+                  <Link
+                    href="/admin/analytics"
+                    className="px-5 py-2 text-xs uppercase tracking-widest text-ink/70 hover:text-ink hover:bg-line/30"
+                  >
+                    Analytics
+                  </Link>
+                  <Link
+                    href="/admin/products"
+                    className="px-5 py-2 text-xs uppercase tracking-widest text-ink/70 hover:text-ink hover:bg-line/30"
+                  >
+                    Manage products
+                  </Link>
+                </div>
+              </div>
+            </div>
           )}
           <Link href="/about" className={linkClass}>
             About us
@@ -92,15 +127,16 @@ export default async function Nav() {
           <SearchBar />
 
           <Link
-            href="/wishlist"
+            href={user ? "/wishlist" : "/login"}
             aria-label="Wishlist"
+            title="Wishlist"
             className="relative text-ink/70 hover:text-ink"
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
               <path d="M12 21s-7.5-4.7-10-9.3C.3 8.1 2 4.5 5.6 4c2-.3 3.8.7 4.9 2.3.7 1 .7 1 1.4 0C13 4.7 14.8 3.7 16.9 4c3.6.5 5.3 4.1 3.6 7.7C19.5 16.3 12 21 12 21z" />
             </svg>
             {wishlistCount > 0 && (
-              <span className="absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-ink text-[10px] text-paper">
+              <span className="absolute -top-2 -right-2 flex h-4 w-4 items-center justify-center rounded-full bg-ink text-[10px] leading-none text-paper">
                 {wishlistCount}
               </span>
             )}

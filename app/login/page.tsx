@@ -56,6 +56,11 @@ export default function LoginPage() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
+          <p className="mt-1 text-right">
+            <Link href="/forgot-password" className="text-xs text-ink/60 underline">
+              Forgot password?
+            </Link>
+          </p>
         </div>
         {error && <p className="text-sm text-red-600">{error}</p>}
         <button type="submit" disabled={loading} className="btn-primary w-full">

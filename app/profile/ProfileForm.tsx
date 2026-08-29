@@ -9,6 +9,8 @@ type Profile = {
   email: string;
   full_name: string | null;
   phone: string | null;
+  gender: string | null;
+  date_of_birth: string | null;
 };
 
 export default function ProfileForm({ profile }: { profile: Profile }) {
@@ -17,6 +19,8 @@ export default function ProfileForm({ profile }: { profile: Profile }) {
 
   const [fullName, setFullName] = useState(profile.full_name ?? "");
   const [phone, setPhone] = useState(profile.phone ?? "");
+  const [gender, setGender] = useState(profile.gender ?? "");
+  const [dateOfBirth, setDateOfBirth] = useState(profile.date_of_birth ?? "");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
@@ -29,7 +33,12 @@ export default function ProfileForm({ profile }: { profile: Profile }) {
 
     const { error } = await supabase
       .from("profiles")
-      .update({ full_name: fullName || null, phone: phone || null })
+      .update({
+        full_name: fullName || null,
+        phone: phone || null,
+        gender: gender || null,
+        date_of_birth: dateOfBirth || null,
+      })
       .eq("id", profile.id);
 
     setSaving(false);
@@ -62,6 +71,30 @@ export default function ProfileForm({ profile }: { profile: Profile }) {
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
           placeholder="For delivery contact"
+        />
+      </div>
+
+      <div>
+        <label className="label">Gender</label>
+        <select
+          className="input"
+          value={gender}
+          onChange={(e) => setGender(e.target.value)}
+        >
+          <option value="">Prefer not to say</option>
+          <option value="male">Male</option>
+          <option value="female">Female</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+
+      <div>
+        <label className="label">Date of birth</label>
+        <input
+          type="date"
+          className="input"
+          value={dateOfBirth}
+          onChange={(e) => setDateOfBirth(e.target.value)}
         />
       </div>
 
