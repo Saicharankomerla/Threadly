@@ -44,7 +44,7 @@ export default function AboutPage() {
            — Only Bank transfer or UPI, whatever's easiest for you.
         </p>
 
-        <h2 className="font-display text-xl pt-4">How it works</h2>
+        <h2 id="how-it-works" className="font-display text-xl pt-4">How it works</h2>
         <ol className="list-decimal list-inside space-y-2">
           <li>Browse the catalog and place an order</li>
           <li>Complete payment securely via UPI or bank transfer</li>

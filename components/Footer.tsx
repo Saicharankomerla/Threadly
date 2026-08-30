@@ -26,8 +26,8 @@ export default function Footer() {
           <h3 className="text-sm font-semibold mb-4">Company</h3>
           <ul className="space-y-2 text-sm text-paper/60">
             <li><Link href="/about" className="hover:text-paper">About Komerla</Link></li>
-            <li className="text-paper/40">How it works</li>
-            <li className="text-paper/40">Sustainability</li>
+            <li><Link href="/about#how-it-works" className="hover:text-paper">How it works</Link></li>
+            <li><Link href="/sustainability" className="hover:text-paper">Sustainability</Link></li>
           </ul>
         </div>
 
@@ -41,7 +41,7 @@ export default function Footer() {
   Contact &amp; support
     </Link>
   </li>
-  <li className="text-paper/40">Legal &amp; privacy</li>
+  <li><Link href="/legal" className="hover:text-paper">Legal &amp; privacy</Link></li>
 </ul>
         </div>
 
@@ -87,7 +87,7 @@ export default function Footer() {
 
       <div className="border-t border-paper/10">
         <p className="mx-auto max-w-6xl px-6 py-4 text-xs text-paper/40">
-          © {year} Komerla. All orders arranged directly, no payment gateway.
+          © {year} Komerla. Payments processed securely via Razorpay.
         </p>
       </div>
 
@@ -95,7 +95,7 @@ export default function Footer() {
         <div className="mx-auto max-w-6xl px-6 py-8">
           <h4 className="text-sm font-semibold mb-3">Payments</h4>
           <div className="flex flex-wrap gap-2">
-            {["Cash on delivery", "UPI", "GPay", "PhonePe"].map((method) => (
+            {["UPI", "GPay", "PhonePe", "Cards", "Netbanking"].map((method) => (
               <span
                 key={method}
                 className="text-xs border border-paper/20 px-3 py-1.5 text-paper/60"

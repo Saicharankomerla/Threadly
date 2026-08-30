@@ -1,8 +1,10 @@
-import { createClient } from "@/lib/supabase/server";
+import { createClient, createServiceRoleClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import OrderForm from "./OrderForm";
 import WishlistButton from "@/components/wishlistButton";
+import ReviewForm from "@/components/ReviewsForm";
+import ReviewsList from "@/components/ReviewsList";
 
 export const dynamic = "force-dynamic";
 
@@ -38,6 +40,50 @@ export default async function ProductDetailPage({
       .eq("product_id", product.id)
       .maybeSingle();
     initialInWishlist = !!existing;
+  }
+
+  // Reviews are public, but reviewer names live in `profiles`, which RLS
+  // normally restricts to each user's own row — so this read uses the
+  // service-role client to fetch just the names of people who reviewed.
+  const serviceClient = createServiceRoleClient();
+  const { data: reviewsRaw } = await serviceClient
+    .from("product_reviews")
+    .select("id, rating, comment, media_urls, created_at, customer_id")
+    .eq("product_id", product.id)
+    .order("created_at", { ascending: false });
+
+  const customerIds = Array.from(new Set((reviewsRaw ?? []).map((r) => r.customer_id)));
+  const { data: reviewerProfiles } = customerIds.length
+    ? await serviceClient.from("profiles").select("id, full_name").in("id", customerIds)
+    : { data: [] as { id: string; full_name: string | null }[] };
+
+  const nameById = new Map((reviewerProfiles ?? []).map((p) => [p.id, p.full_name]));
+
+  const reviews = (reviewsRaw ?? []).map((r) => ({
+    id: r.id,
+    rating: r.rating,
+    comment: r.comment,
+    media_urls: r.media_urls ?? [],
+    created_at: r.created_at,
+    customer_name: nameById.get(r.customer_id) ?? null,
+  }));
+
+  // A customer can review this product only if they have a delivered order
+  // that included it, and haven't already reviewed it.
+  let eligibleOrderId: string | null = null;
+  if (user) {
+    const alreadyReviewed = (reviewsRaw ?? []).some((r) => r.customer_id === user.id);
+    if (!alreadyReviewed) {
+      const { data: eligibleOrder } = await supabase
+        .from("orders")
+        .select("id, order_items!inner(product_id)")
+        .eq("customer_id", user.id)
+        .eq("status", "delivered")
+        .eq("order_items.product_id", product.id)
+        .limit(1)
+        .maybeSingle();
+      eligibleOrderId = eligibleOrder?.id ?? null;
+    }
   }
 
   return (
@@ -81,6 +127,20 @@ export default async function ProductDetailPage({
 
         <div className="mt-6 border-t border-line pt-6">
           <OrderForm product={product} isLoggedIn={!!user} />
+        </div>
+      </div>
+
+      <div className="md:col-span-2 mt-4 border-t border-line pt-8">
+        <h2 className="font-display text-xl mb-6">Reviews</h2>
+
+        {eligibleOrderId && (
+          <div className="mb-8 max-w-md">
+            <ReviewForm productId={product.id} orderId={eligibleOrderId} />
+          </div>
+        )}
+
+        <div className="max-w-2xl">
+          <ReviewsList reviews={reviews} />
         </div>
       </div>
     </div>
