@@ -5,22 +5,28 @@ export default function AboutPage() {
     <div className="max-w-3xl">
       <h1 className="font-display text-3xl mb-10">About Komerla</h1>
 
-      <div className="flex flex-col sm:flex-row gap-8 items-center sm:items-start mb-12 card p-6">
-        <div className="relative h-40 w-40 flex-shrink-0 overflow-hidden rounded-full bg-line/40">
+      <div className="grid sm:grid-cols-[1fr_1.1fr] gap-8 sm:gap-12 items-center mb-16">
+        <div className="relative aspect-[4/5] w-full overflow-hidden bg-line/40">
           <Image
             src="/founder.jpg"
             alt="Sai Charan Komerla"
             fill
             className="object-cover"
-            sizes="160px"
+            sizes="(max-width: 640px) 100vw, 480px"
+            priority
           />
         </div>
-        <div className="text-center sm:text-left">
-          <p className="font-display text-2xl">Sai Charan Komerla</p>
-          <p className="text-sm uppercase tracking-widest text-thread mt-1">
+        <div>
+          <p className="font-display text-4xl sm:text-5xl leading-[1.05] mb-4">
+            Sai Charan
+            <br />
+            Komerla
+          </p>
+          <div className="w-10 border-t border-ink/30 mb-4" />
+          <p className="text-sm uppercase tracking-widest text-thread mb-1">
             Founder &amp; CEO
           </p>
-          <p className="text-xs uppercase tracking-[0.2em] text-ink/50 mt-1">
+          <p className="text-xs uppercase tracking-[0.3em] text-ink/50">
             Komerla Fashion House
           </p>
         </div>
@@ -34,8 +40,8 @@ export default function AboutPage() {
 
         <p>
           When you place an order, I personally 
-          confirm it with you, and deliver it by hand. Payment happens on
-          delivery — Bank transfer or UPI, whatever's easiest for you.
+          confirm it with you, and deliver it by hand.I'm sorry to say this there is no cash on delivery
+           — Only Bank transfer or UPI, whatever's easiest for you.
         </p>
 
         <h2 className="font-display text-xl pt-4">How it works</h2>
