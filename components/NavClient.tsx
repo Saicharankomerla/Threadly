@@ -27,9 +27,9 @@ export default function NavClient({
 
   return (
     <header className="border-b border-line bg-paper/95 backdrop-blur sticky top-0 z-20">
-      <div className="grid grid-cols-[1fr_auto_1fr] items-center px-4 sm:px-6">
-        {/* Left: desktop text nav (hidden on mobile), hamburger button (mobile only) */}
-        <div className="justify-self-start flex items-center">
+      <div className="flex items-center justify-between px-4 sm:px-6 md:grid md:grid-cols-[1fr_auto_1fr]">
+        {/* Left: hamburger + mobile logo (mobile only), desktop text nav (hidden on mobile) */}
+        <div className="justify-self-start flex items-center gap-2">
           <button
             type="button"
             aria-label={menuOpen ? "Close menu" : "Open menu"}
@@ -46,6 +46,28 @@ export default function NavClient({
               </svg>
             )}
           </button>
+
+          {/* Mobile-only logo, sits right next to the hamburger */}
+          <Link
+            href="/"
+            className="flex md:hidden items-center gap-1.5"
+            aria-label="Komerla — Fashion House"
+          >
+            <Image
+              src="/logo.png"
+              alt=""
+              width={56}
+              height={40}
+              priority
+              className="h-6 w-auto"
+            />
+            <span className="flex flex-col leading-none">
+              <span className="font-display text-sm tracking-wide">KOMERLA</span>
+              <span className="text-[7px] uppercase tracking-[0.2em] text-ink/50 mt-0.5">
+                Fashion House
+              </span>
+            </span>
+          </Link>
 
           <nav className="hidden md:flex items-center gap-8">
             <div className="group relative h-full">
@@ -115,7 +137,7 @@ export default function NavClient({
 
         <Link
           href="/"
-          className="flex items-center gap-2 sm:gap-3 py-2 sm:py-4 justify-self-center -translate-x-3 sm:translate-x-0"
+          className="hidden md:flex items-center gap-2 sm:gap-3 py-2 sm:py-4 justify-self-center"
           aria-label="Komerla — Fashion House"
         >
           <Image
@@ -175,7 +197,7 @@ export default function NavClient({
           ) : (
             <Link
               href="/login"
-              className="text-[10px] sm:text-xs font-medium uppercase tracking-widest border border-ink px-2.5 sm:px-4 py-1.5 sm:py-2 hover:bg-ink hover:text-paper transition-colors"
+              className="text-[10px] sm:text-xs font-medium uppercase tracking-widest text-ink/70 hover:text-ink sm:text-ink sm:hover:text-paper sm:border sm:border-ink sm:px-4 sm:py-2 sm:hover:bg-ink transition-colors"
             >
               Log in
             </Link>
