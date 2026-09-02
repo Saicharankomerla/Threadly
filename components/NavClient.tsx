@@ -156,7 +156,7 @@ export default function NavClient({
           </span>
         </Link>
 
-        <div className="flex items-center gap-2 sm:gap-5 justify-self-end">
+        <div className="flex items-center gap-2.5 sm:gap-5 justify-self-end">
           <span className="scale-90 sm:scale-100 origin-center">
             <SearchBar />
           </span>
