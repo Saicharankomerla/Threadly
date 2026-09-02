@@ -1,4 +1,5 @@
 import Link from "next/link";
+import FooterSection from "./FooterSection";
 
 const SOCIAL_ICONS = [
   { name: "Instagram", path: "M12 2c2.7 0 3.1 0 4.1.1 1 .1 1.7.2 2.3.5.6.3 1.1.6 1.6 1.1.5.5.8 1 1.1 1.6.3.6.4 1.3.5 2.3.1 1 .1 1.4.1 4.1s0 3.1-.1 4.1c-.1 1-.2 1.7-.5 2.3-.3.6-.6 1.1-1.1 1.6-.5.5-1 .8-1.6 1.1-.6.3-1.3.4-2.3.5-1 .1-1.4.1-4.1.1s-3.1 0-4.1-.1c-1-.1-1.7-.2-2.3-.5-.6-.3-1.1-.6-1.6-1.1-.5-.5-.8-1-1.1-1.6-.3-.6-.4-1.3-.5-2.3-.1-1-.1-1.4-.1-4.1s0-3.1.1-4.1c.1-1 .2-1.7.5-2.3.3-.6.6-1.1 1.1-1.6.5-.5 1-.8 1.6-1.1.6-.3 1.3-.4 2.3-.5C8.9 2 9.3 2 12 2zm0 5a5 5 0 100 10 5 5 0 000-10zm0 8.2a3.2 3.2 0 110-6.4 3.2 3.2 0 010 6.4zm5.2-8.4a1.2 1.2 0 100-2.4 1.2 1.2 0 000 2.4z" },
@@ -12,41 +13,37 @@ export default function Footer() {
 
   return (
     <footer className="bg-ink text-paper mt-16">
-      <div className="mx-auto max-w-6xl px-6 py-14 grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
-        <div>
-          <h3 className="text-sm font-semibold mb-4">Shop</h3>
+      <div className="mx-auto max-w-6xl px-6 py-8 sm:py-14 grid gap-0 sm:gap-10 sm:grid-cols-2 lg:grid-cols-4">
+        <FooterSection title="Shop">
           <ul className="space-y-2 text-sm text-paper/60">
             <li><Link href="/" className="hover:text-paper">Home</Link></li>
             <li><Link href="/" className="hover:text-paper">Men</Link></li>
             <li><Link href="/about" className="hover:text-paper">About us</Link></li>
           </ul>
-        </div>
+        </FooterSection>
 
-        <div>
-          <h3 className="text-sm font-semibold mb-4">Company</h3>
+        <FooterSection title="Company">
           <ul className="space-y-2 text-sm text-paper/60">
             <li><Link href="/about" className="hover:text-paper">About Komerla</Link></li>
             <li><Link href="/about#how-it-works" className="hover:text-paper">How it works</Link></li>
             <li><Link href="/sustainability" className="hover:text-paper">Sustainability</Link></li>
           </ul>
-        </div>
+        </FooterSection>
 
-        <div>
-          <h3 className="text-sm font-semibold mb-4">Help</h3>
+        <FooterSection title="Help">
           <ul className="space-y-2 text-sm text-paper/60">
-          <li><Link href="/orders" className="hover:text-paper">My orders</Link></li>
-          <li><Link href="/profile" className="hover:text-paper">My profile</Link></li>
-          <li>
-    <Link href="/contact" className="hover:text-paper">
-  Contact &amp; support
-    </Link>
-  </li>
-  <li><Link href="/legal" className="hover:text-paper">Legal &amp; privacy</Link></li>
-</ul>
-        </div>
+            <li><Link href="/orders" className="hover:text-paper">My orders</Link></li>
+            <li><Link href="/profile" className="hover:text-paper">My profile</Link></li>
+            <li>
+              <Link href="/contact" className="hover:text-paper">
+                Contact &amp; support
+              </Link>
+            </li>
+            <li><Link href="/legal" className="hover:text-paper">Legal &amp; privacy</Link></li>
+          </ul>
+        </FooterSection>
 
-        <div>
-          <h3 className="text-sm font-semibold mb-4">Join us</h3>
+        <FooterSection title="Join us">
           <p className="text-sm text-paper/60 mb-3">
             Sign up and be first to know about new arrivals.
           </p>
@@ -56,7 +53,7 @@ export default function Footer() {
           >
             Sign up now
           </Link>
-        </div>
+        </FooterSection>
       </div>
 
       <div className="border-t border-paper/10">

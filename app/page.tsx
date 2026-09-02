@@ -71,7 +71,7 @@ export default async function CatalogPage() {
 
       <div
         id="catalog"
-        className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4"
+        className="grid grid-cols-2 gap-px bg-line/40 sm:gap-4 sm:bg-transparent sm:grid-cols-3 md:grid-cols-4"
       >
         {products?.map((p) => (
           <ProductCard key={p.id} product={p} />

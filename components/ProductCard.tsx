@@ -19,7 +19,7 @@ export default function ProductCard({
   initialInWishlist?: boolean;
 }) {
   return (
-    <div className="card group relative overflow-hidden">
+    <div className="group relative overflow-hidden bg-white sm:rounded-lg sm:border sm:border-line">
       <div className="absolute top-2 right-2 z-10">
         <WishlistButton
           productId={product.id}
@@ -49,13 +49,15 @@ export default function ProductCard({
             </span>
           )}
         </div>
-        <div className="p-3">
+        <div className="px-1.5 py-2 sm:p-3">
           {product.category && (
             <p className="text-xs uppercase tracking-wide text-ink/50">
               {product.category}
             </p>
           )}
-          <h3 className="font-medium leading-snug">{product.name}</h3>
+          <h3 className="text-sm sm:text-base font-medium leading-snug line-clamp-2">
+            {product.name}
+          </h3>
           <p className="mt-1 text-sm text-ink/70">₹{product.price.toFixed(2)}</p>
         </div>
       </Link>
