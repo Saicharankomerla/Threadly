@@ -115,7 +115,7 @@ export default function NavClient({
 
         <Link
           href="/"
-          className="flex items-center gap-2 sm:gap-3 py-2 sm:py-4 justify-self-center"
+          className="flex items-center gap-2 sm:gap-3 py-2 sm:py-4 justify-self-center -translate-x-3 sm:translate-x-0"
           aria-label="Komerla — Fashion House"
         >
           <Image
