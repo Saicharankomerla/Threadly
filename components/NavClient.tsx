@@ -37,11 +37,11 @@ export default function NavClient({
             className="md:hidden p-1 -ml-1 text-ink/70"
           >
             {menuOpen ? (
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                 <path d="M6 6l12 12M18 6L6 18" />
               </svg>
             ) : (
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                 <path d="M4 7h16M4 12h16M4 17h16" />
               </svg>
             )}
@@ -115,20 +115,29 @@ export default function NavClient({
 
         <Link
           href="/"
-          className="flex items-center gap-2 sm:gap-3 py-4 justify-self-center"
+          className="flex items-center gap-2 sm:gap-3 py-2 sm:py-4 justify-self-center"
           aria-label="Komerla — Fashion House"
         >
-          <Image src="/logo.png" alt="" width={56} height={40} priority />
+          <Image
+            src="/logo.png"
+            alt=""
+            width={56}
+            height={40}
+            priority
+            className="h-7 w-auto sm:h-10"
+          />
           <span className="flex flex-col leading-none">
-            <span className="font-display text-lg sm:text-xl tracking-wide">KOMERLA</span>
-            <span className="text-[9px] sm:text-[10px] uppercase tracking-[0.3em] text-ink/50 mt-1">
+            <span className="font-display text-base sm:text-xl tracking-wide">KOMERLA</span>
+            <span className="text-[8px] sm:text-[10px] uppercase tracking-[0.2em] sm:tracking-[0.3em] text-ink/50 mt-0.5 sm:mt-1">
               Fashion House
             </span>
           </span>
         </Link>
 
-        <div className="flex items-center gap-3 sm:gap-5 justify-self-end">
-          <SearchBar />
+        <div className="flex items-center gap-2 sm:gap-5 justify-self-end">
+          <span className="scale-90 sm:scale-100 origin-center">
+            <SearchBar />
+          </span>
 
           <Link
             href={isLoggedIn ? "/wishlist" : "/login"}
@@ -136,7 +145,7 @@ export default function NavClient({
             title="Wishlist"
             className="relative text-ink/70 hover:text-ink"
           >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-[18px] w-[18px] sm:h-5 sm:w-5">
               <path d="M12 21s-7.5-4.7-10-9.3C.3 8.1 2 4.5 5.6 4c2-.3 3.8.7 4.9 2.3.7 1 .7 1 1.4 0C13 4.7 14.8 3.7 16.9 4c3.6.5 5.3 4.1 3.6 7.7C19.5 16.3 12 21 12 21z" />
             </svg>
             {wishlistCount > 0 && (
@@ -146,14 +155,16 @@ export default function NavClient({
             )}
           </Link>
 
-          <CartIcon />
+          <span className="scale-90 sm:scale-100 origin-center">
+            <CartIcon />
+          </span>
 
           <Link
             href={isLoggedIn ? "/profile" : "/login"}
             aria-label="Account"
             className="hidden sm:inline-flex text-ink/70 hover:text-ink"
           >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-5 w-5">
               <circle cx="12" cy="8" r="4" />
               <path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8" />
             </svg>
@@ -164,7 +175,7 @@ export default function NavClient({
           ) : (
             <Link
               href="/login"
-              className="text-xs font-medium uppercase tracking-widest border border-ink px-3 sm:px-4 py-2 hover:bg-ink hover:text-paper transition-colors"
+              className="text-[10px] sm:text-xs font-medium uppercase tracking-widest border border-ink px-2.5 sm:px-4 py-1.5 sm:py-2 hover:bg-ink hover:text-paper transition-colors"
             >
               Log in
             </Link>
