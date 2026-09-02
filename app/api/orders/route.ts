@@ -185,7 +185,7 @@ export async function POST(req: NextRequest) {
         .join("");
 
       await resend.emails.send({
-        from: "Komerla Orders <onboarding@resend.dev>",
+        from: "Komerla Orders <orders@komerla.com>",
         to: process.env.ADMIN_EMAIL,
         subject: `New order — ${orderItemsToInsert.length} item(s), ₹${total.toFixed(2)}`,
         html: `
@@ -208,4 +208,3 @@ export async function POST(req: NextRequest) {
 
   return NextResponse.json({ order_id: order.id }, { status: 201 });
 }
-

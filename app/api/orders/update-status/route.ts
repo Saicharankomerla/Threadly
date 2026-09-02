@@ -76,8 +76,6 @@ export async function POST(req: NextRequest) {
   // Never blocks the response — a failed email doesn't undo the status update.
   try {
     const message = CUSTOMER_MESSAGES[status as OrderStatus];
-    console.log("[update-status] status received:", status);
-    console.log("[update-status] message found for this status:", !!message);
 
     // The customer's profile row is only readable by the customer themselves
     // under RLS — the admin's regular client can't see it, and that failure
@@ -86,25 +84,20 @@ export async function POST(req: NextRequest) {
     let customerEmail: string | undefined;
     if (message) {
       const serviceClient = createServiceRoleClient();
-      const { data: customerProfile, error: profileError } = await serviceClient
+      const { data: customerProfile } = await serviceClient
         .from("profiles")
         .select("email")
         .eq("id", order.customer_id)
         .single();
-      console.log("[update-status] customer_id looked up:", order.customer_id);
-      console.log("[update-status] profile fetch error:", profileError);
-      console.log("[update-status] profile fetch result:", customerProfile);
       customerEmail = customerProfile?.email;
     }
-    console.log("[update-status] RESEND_API_KEY present:", !!process.env.RESEND_API_KEY);
-    console.log("[update-status] final customerEmail used:", customerEmail);
 
     if (message && customerEmail && process.env.RESEND_API_KEY) {
       const resend = new Resend(process.env.RESEND_API_KEY);
       const trackUrl = `${process.env.NEXT_PUBLIC_SITE_URL}/track?id=${order.id}`;
 
       await resend.emails.send({
-        from: "Komerla Orders <onboarding@resend.dev>",
+        from: "Komerla Orders <orders@komerla.com>",
         to: customerEmail,
         subject: `${message.subject} — Komerla`,
         html: `
