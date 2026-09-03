@@ -37,11 +37,11 @@ export default function NavClient({
             className="md:hidden p-1 -ml-1 text-ink/70"
           >
             {menuOpen ? (
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                 <path d="M6 6l12 12M18 6L6 18" />
               </svg>
             ) : (
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                 <path d="M4 7h16M4 12h16M4 17h16" />
               </svg>
             )}
@@ -156,8 +156,8 @@ export default function NavClient({
           </span>
         </Link>
 
-        <div className="flex items-center gap-2.5 sm:gap-5 justify-self-end">
-          <span className="scale-90 sm:scale-100 origin-center">
+        <div className="flex items-center gap-3.5 sm:gap-5 justify-self-end">
+          <span className="scale-100 origin-center">
             <SearchBar />
           </span>
 
@@ -167,7 +167,7 @@ export default function NavClient({
             title="Wishlist"
             className="relative text-ink/70 hover:text-ink"
           >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-[18px] w-[18px] sm:h-5 sm:w-5">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-5 w-5">
               <path d="M12 21s-7.5-4.7-10-9.3C.3 8.1 2 4.5 5.6 4c2-.3 3.8.7 4.9 2.3.7 1 .7 1 1.4 0C13 4.7 14.8 3.7 16.9 4c3.6.5 5.3 4.1 3.6 7.7C19.5 16.3 12 21 12 21z" />
             </svg>
             {wishlistCount > 0 && (
@@ -177,7 +177,7 @@ export default function NavClient({
             )}
           </Link>
 
-          <span className="scale-90 sm:scale-100 origin-center">
+          <span className="scale-100 origin-center">
             <CartIcon />
           </span>
 
