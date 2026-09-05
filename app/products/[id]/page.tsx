@@ -1,10 +1,10 @@
 import { createClient, createServiceRoleClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
-import Image from "next/image";
 import OrderForm from "./OrderForm";
 import WishlistButton from "@/components/wishlistButton";
 import ReviewForm from "@/components/ReviewsForm";
 import ReviewsList from "@/components/ReviewsList";
+import ProductGallery from "@/components/ProductGallery";
 
 export const dynamic = "force-dynamic";
 
@@ -86,23 +86,22 @@ export default async function ProductDetailPage({
     }
   }
 
+  // Main photo (image_url) comes first, followed by any additional gallery
+  // photos in their saved order.
+  const { data: extraImages } = await supabase
+    .from("product_images")
+    .select("image_url")
+    .eq("product_id", product.id)
+    .order("sort_order", { ascending: true });
+
+  const galleryImages = [
+    ...(product.image_url ? [product.image_url] : []),
+    ...(extraImages ?? []).map((row) => row.image_url),
+  ];
+
   return (
     <div className="grid gap-8 md:grid-cols-2">
-      <div className="relative aspect-[3/4] w-full overflow-hidden rounded-lg bg-line/40">
-        {product.image_url ? (
-          <Image
-            src={product.image_url}
-            alt={product.name}
-            fill
-            className="object-cover"
-            sizes="(max-width: 768px) 100vw, 50vw"
-          />
-        ) : (
-          <div className="flex h-full items-center justify-center text-ink/30">
-            No image
-          </div>
-        )}
-      </div>
+      <ProductGallery images={galleryImages} productName={product.name} />
 
       <div>
         <div className="flex items-start justify-between gap-4">

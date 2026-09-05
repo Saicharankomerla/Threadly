@@ -25,6 +25,7 @@ const emptyForm = {
   image_url: "",
   category: "",
   is_category_image: false,
+  extraImages: [] as string[],
 };
 
 export default function ProductsBoard({ initialProducts }: { initialProducts: Product[] }) {
@@ -35,8 +36,14 @@ export default function ProductsBoard({ initialProducts }: { initialProducts: Pr
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  function startEdit(p: Product) {
+  async function startEdit(p: Product) {
     setEditingId(p.id);
+    const { data: existingImages } = await supabase
+      .from("product_images")
+      .select("image_url")
+      .eq("product_id", p.id)
+      .order("sort_order", { ascending: true });
+
     setForm({
       name: p.name,
       description: p.description ?? "",
@@ -46,6 +53,7 @@ export default function ProductsBoard({ initialProducts }: { initialProducts: Pr
       image_url: p.image_url ?? "",
       category: p.category ?? "",
       is_category_image: p.is_category_image ?? false,
+      extraImages: (existingImages ?? []).map((row) => row.image_url),
     });
   }
 
@@ -86,11 +94,19 @@ export default function ProductsBoard({ initialProducts }: { initialProducts: Pr
         .eq("id", editingId)
         .select()
         .single();
-      setSaving(false);
       if (error) {
+        setSaving(false);
         setError(error.message);
         return;
       }
+
+      const galleryError = await saveGalleryImages(editingId, form.extraImages);
+      setSaving(false);
+      if (galleryError) {
+        setError(galleryError);
+        return;
+      }
+
       setProducts((prev) => prev.map((p) => (p.id === editingId ? (data as Product) : p)));
       resetForm();
     } else {
@@ -99,14 +115,44 @@ export default function ProductsBoard({ initialProducts }: { initialProducts: Pr
         .insert({ ...payload, is_active: true })
         .select()
         .single();
-      setSaving(false);
       if (error) {
+        setSaving(false);
         setError(error.message);
         return;
       }
+
+      const galleryError = await saveGalleryImages(data.id, form.extraImages);
+      setSaving(false);
+      if (galleryError) {
+        setError(galleryError);
+        return;
+      }
+
       setProducts((prev) => [data as Product, ...prev]);
       resetForm();
     }
+  }
+
+  // Replaces every gallery image for this product with the current list in
+  // the form — simplest way to handle adds, removes, and reordering at once.
+  async function saveGalleryImages(productId: string, urls: string[]) {
+    const { error: deleteError } = await supabase
+      .from("product_images")
+      .delete()
+      .eq("product_id", productId);
+    if (deleteError) return deleteError.message;
+
+    const validUrls = urls.map((u) => u.trim()).filter(Boolean);
+    if (validUrls.length === 0) return null;
+
+    const { error: insertError } = await supabase.from("product_images").insert(
+      validUrls.map((url, i) => ({
+        product_id: productId,
+        image_url: url,
+        sort_order: i,
+      }))
+    );
+    return insertError ? insertError.message : null;
   }
 
   async function toggleActive(p: Product) {
@@ -206,7 +252,48 @@ export default function ProductsBoard({ initialProducts }: { initialProducts: Pr
           />
           <p className="mt-1 text-xs text-ink/50">
             Upload to the Supabase "product-images" storage bucket and paste the
-            public URL here, or use any hosted image link.
+            public URL here, or use any hosted image link. This is the main
+            photo shown on cards and everywhere else on the site.
+          </p>
+        </div>
+
+        <div>
+          <label className="label">Additional photos (optional)</label>
+          {form.extraImages.map((url, i) => (
+            <div key={i} className="flex gap-2 mb-2">
+              <input
+                className="input"
+                placeholder="https://…"
+                value={url}
+                onChange={(e) => {
+                  const next = [...form.extraImages];
+                  next[i] = e.target.value;
+                  setForm({ ...form, extraImages: next });
+                }}
+              />
+              <button
+                type="button"
+                onClick={() =>
+                  setForm({
+                    ...form,
+                    extraImages: form.extraImages.filter((_, idx) => idx !== i),
+                  })
+                }
+                className="btn-secondary shrink-0"
+              >
+                Remove
+              </button>
+            </div>
+          ))}
+          <button
+            type="button"
+            onClick={() => setForm({ ...form, extraImages: [...form.extraImages, ""] })}
+            className="btn-secondary w-full"
+          >
+            + Add another photo
+          </button>
+          <p className="mt-1 text-xs text-ink/50">
+            These show as extra photos in the gallery on the product page.
           </p>
         </div>
 
