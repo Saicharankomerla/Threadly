@@ -13,20 +13,62 @@ declare global {
   }
 }
 
+const INDIAN_STATES = [
+  "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh",
+  "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka",
+  "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", "Mizoram",
+  "Nagaland", "Odisha", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu",
+  "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal",
+  "Andaman and Nicobar Islands", "Chandigarh",
+  "Dadra and Nagar Haveli and Daman and Diu", "Delhi", "Jammu and Kashmir",
+  "Ladakh", "Lakshadweep", "Puducherry",
+];
+
 export default function CartPage() {
   const router = useRouter();
   const { items, removeItem, updateQuantity, clearCart, totalPrice } = useCart();
 
-  const [address, setAddress] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [addressLine, setAddressLine] = useState("");
+  const [apartment, setApartment] = useState("");
+  const [city, setCity] = useState("");
+  const [pincode, setPincode] = useState("");
+  const [state, setState] = useState("");
   const [phone, setPhone] = useState("");
   const [notes, setNotes] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
+  // Combine the structured fields into one clean formatted string —
+  // this is what actually gets saved as delivery_address, so nothing
+  // downstream (admin dashboard, order emails, /orders pages) needs to change.
+  function buildFormattedAddress() {
+    const lines = [
+      `${firstName.trim()} ${lastName.trim()}`.trim(),
+      apartment.trim() ? `${addressLine.trim()}, ${apartment.trim()}` : addressLine.trim(),
+      `${city.trim()}, ${state} - ${pincode.trim()}`,
+    ];
+    return lines.filter(Boolean).join("\n");
+  }
+
   async function handleCheckout(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
     setError(null);
+
+    if (!/^\d{6}$/.test(pincode.trim())) {
+      setError("Please enter a valid 6-digit pincode.");
+      setLoading(false);
+      return;
+    }
+    if (!state) {
+      setError("Please select a state.");
+      setLoading(false);
+      return;
+    }
+
+    const formattedAddress = buildFormattedAddress();
 
     try {
       // 1. Ask our server to create a Razorpay order (also re-validates
@@ -60,7 +102,7 @@ export default function CartPage() {
         name: "Komerla",
         description: "Order payment",
         order_id: createData.razorpay_order_id,
-        prefill: { contact: phone },
+        prefill: { contact: phone, name: `${firstName} ${lastName}`.trim() },
         theme: { color: "#1a1a1a" },
         handler: async function (response: any) {
           // 3. Payment succeeded on Razorpay's side — now create the real
@@ -72,7 +114,7 @@ export default function CartPage() {
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({
                 items: cartItems,
-                delivery_address: address,
+                delivery_address: formattedAddress,
                 phone,
                 notes,
                 razorpay_order_id: response.razorpay_order_id,
@@ -200,16 +242,90 @@ export default function CartPage() {
         <div className="card p-5 h-fit">
           <h2 className="font-medium mb-4">Checkout</h2>
           <form onSubmit={handleCheckout} className="space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label className="label">First name</label>
+                <input
+                  required
+                  className="input"
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                />
+              </div>
+              <div>
+                <label className="label">Last name</label>
+                <input
+                  required
+                  className="input"
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                />
+              </div>
+            </div>
+
             <div>
-              <label className="label">Delivery address</label>
-              <textarea
+              <label className="label">Address</label>
+              <input
                 required
                 className="input"
-                rows={3}
-                value={address}
-                onChange={(e) => setAddress(e.target.value)}
+                placeholder="House no., street, area"
+                value={addressLine}
+                onChange={(e) => setAddressLine(e.target.value)}
               />
             </div>
+
+            <div>
+              <label className="label">Apartment, floor, landmark (optional)</label>
+              <input
+                className="input"
+                value={apartment}
+                onChange={(e) => setApartment(e.target.value)}
+              />
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label className="label">Town/City</label>
+                <input
+                  required
+                  className="input"
+                  value={city}
+                  onChange={(e) => setCity(e.target.value)}
+                />
+              </div>
+              <div>
+                <label className="label">Pincode</label>
+                <input
+                  required
+                  className="input"
+                  inputMode="numeric"
+                  maxLength={6}
+                  placeholder="e.g. 500001"
+                  value={pincode}
+                  onChange={(e) => setPincode(e.target.value.replace(/\D/g, ""))}
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="label">State</label>
+              <select
+                required
+                className="input"
+                value={state}
+                onChange={(e) => setState(e.target.value)}
+              >
+                <option value="" disabled>
+                  Select state
+                </option>
+                {INDIAN_STATES.map((s) => (
+                  <option key={s} value={s}>
+                    {s}
+                  </option>
+                ))}
+              </select>
+            </div>
+
             <div>
               <label className="label">Phone number</label>
               <input
