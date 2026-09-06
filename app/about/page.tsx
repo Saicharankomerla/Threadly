@@ -32,14 +32,16 @@ export default function AboutPage() {
         </div>
       </div>
 
-      <div className="flex items-center gap-5 mb-16">
-        <div className="relative h-24 w-24 sm:h-28 sm:w-28 flex-shrink-0 overflow-hidden rounded-full bg-line/40">
+      <h2 className="font-display text-xl mb-6">Team</h2>
+
+      <div className="flex items-center gap-6 mb-16">
+        <div className="relative h-36 w-36 sm:h-44 sm:w-44 flex-shrink-0 overflow-hidden rounded-full bg-line/40">
           <Image
             src="/team/shakeer.jpg"
             alt="Shakeer"
             fill
             className="object-cover"
-            sizes="112px"
+            sizes="176px"
           />
         </div>
         <div>
