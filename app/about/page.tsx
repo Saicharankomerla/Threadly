@@ -32,6 +32,27 @@ export default function AboutPage() {
         </div>
       </div>
 
+      <div className="flex items-center gap-5 mb-16">
+        <div className="relative h-24 w-24 sm:h-28 sm:w-28 flex-shrink-0 overflow-hidden rounded-full bg-line/40">
+          <Image
+            src="/team/shakeer.jpg"
+            alt="Shakeer"
+            fill
+            className="object-cover"
+            sizes="112px"
+          />
+        </div>
+        <div>
+          <p className="font-display text-2xl leading-tight mb-1">Shakeer</p>
+          <p className="text-sm uppercase tracking-widest text-thread mb-1">
+            Chief of Staff
+          </p>
+          <p className="text-xs uppercase tracking-[0.3em] text-ink/50">
+            Komerla Fashion House
+          </p>
+        </div>
+      </div>
+
       <div className="max-w-2xl space-y-5 text-ink/80 leading-relaxed">
         <p>
           Komerla is a fashion house built on a simple idea: great style shouldn't come with markup, guesswork, or middlemen.
