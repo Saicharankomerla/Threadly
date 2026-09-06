@@ -13,7 +13,13 @@ type Order = {
   phone: string;
   notes: string | null;
   created_at: string;
-  order_items: { id: string; product_name: string; quantity: number; size: string | null }[];
+  order_items: {
+    id: string;
+    product_name: string;
+    quantity: number;
+    size: string | null;
+    products: { image_url: string | null } | null;
+  }[];
   profiles: { email: string; full_name: string | null } | null;
 };
 
@@ -32,7 +38,7 @@ export default function AdminOrdersBoard({ initialOrders }: { initialOrders: Ord
         async (payload) => {
           const { data } = await supabase
             .from("orders")
-            .select("*, order_items(*), profiles(email, full_name)")
+            .select("*, order_items(*, products(image_url)), profiles(email, full_name)")
             .eq("id", (payload.new as any).id)
             .single();
           if (data) setOrders((prev) => [data as Order, ...prev]);
@@ -116,11 +122,25 @@ export default function AdminOrdersBoard({ initialOrders }: { initialOrders: Ord
               </div>
             </div>
 
-            <div className="mt-3 border-t border-line pt-3 text-sm space-y-1">
+            <div className="mt-3 border-t border-line pt-3 space-y-2">
               {order.order_items.map((item) => (
-                <p key={item.id}>
-                  {item.product_name} {item.size ? `(${item.size})` : ""} x{item.quantity}
-                </p>
+                <div key={item.id} className="flex items-center justify-between gap-3 text-sm">
+                  <p>
+                    {item.product_name} {item.size ? `(${item.size})` : ""} x{item.quantity}
+                  </p>
+                  {item.products?.image_url ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={item.products.image_url}
+                      alt={item.product_name}
+                      className="h-12 w-12 shrink-0 rounded object-cover bg-line/40"
+                    />
+                  ) : (
+                    <div className="h-12 w-12 shrink-0 rounded bg-line/40 flex items-center justify-center text-[10px] text-ink/40">
+                      No photo
+                    </div>
+                  )}
+                </div>
               ))}
             </div>
 

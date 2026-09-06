@@ -9,7 +9,7 @@ export default async function AdminDashboard() {
 
   const { data: orders } = await supabase
     .from("orders")
-    .select("*, order_items(*), profiles(email, full_name)")
+    .select("*, order_items(*, products(image_url)), profiles(email, full_name)")
     .order("created_at", { ascending: false });
 
   return (
