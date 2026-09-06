@@ -133,10 +133,10 @@ export default function AdminOrdersBoard({ initialOrders }: { initialOrders: Ord
                     <img
                       src={item.products.image_url}
                       alt={item.product_name}
-                      className="h-12 w-12 shrink-0 rounded object-cover bg-line/40"
+                      className="h-20 w-20 shrink-0 rounded object-cover bg-line/40"
                     />
                   ) : (
-                    <div className="h-12 w-12 shrink-0 rounded bg-line/40 flex items-center justify-center text-[10px] text-ink/40">
+                    <div className="h-20 w-20 shrink-0 rounded bg-line/40 flex items-center justify-center text-[10px] text-ink/40">
                       No photo
                     </div>
                   )}
