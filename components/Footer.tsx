@@ -39,6 +39,11 @@ export default function Footer() {
                 Contact &amp; support
               </Link>
             </li>
+            <li>
+              <Link href="/returns" className="hover:text-paper">
+                Returns &amp; Exchange
+              </Link>
+            </li>
             <li><Link href="/legal" className="hover:text-paper">Legal &amp; privacy</Link></li>
           </ul>
         </FooterSection>
