@@ -8,6 +8,7 @@ type Product = {
   name: string;
   description: string | null;
   price: number;
+  compare_at_price: number | null;
   sizes: string[];
   stock: number;
   image_url: string | null;
@@ -20,6 +21,7 @@ const emptyForm = {
   name: "",
   description: "",
   price: "",
+  compareAtPrice: "",
   sizes: "",
   stock: "",
   image_url: "",
@@ -48,6 +50,7 @@ export default function ProductsBoard({ initialProducts }: { initialProducts: Pr
       name: p.name,
       description: p.description ?? "",
       price: String(p.price),
+      compareAtPrice: p.compare_at_price != null ? String(p.compare_at_price) : "",
       sizes: (p.sizes ?? []).join(", "),
       stock: String(p.stock),
       image_url: p.image_url ?? "",
@@ -67,10 +70,18 @@ export default function ProductsBoard({ initialProducts }: { initialProducts: Pr
     setSaving(true);
     setError(null);
 
+    const compareAtPriceNum = form.compareAtPrice.trim() ? Number(form.compareAtPrice) : null;
+    if (form.compareAtPrice.trim() && Number.isNaN(compareAtPriceNum)) {
+      setError("Original price must be a valid number.");
+      setSaving(false);
+      return;
+    }
+
     const payload = {
       name: form.name,
       description: form.description || null,
       price: Number(form.price),
+      compare_at_price: compareAtPriceNum,
       sizes: form.sizes
         .split(",")
         .map((s) => s.trim())
@@ -83,6 +94,12 @@ export default function ProductsBoard({ initialProducts }: { initialProducts: Pr
 
     if (!payload.name || Number.isNaN(payload.price) || Number.isNaN(payload.stock)) {
       setError("Name, a valid price, and stock are required.");
+      setSaving(false);
+      return;
+    }
+
+    if (payload.compare_at_price !== null && payload.compare_at_price <= payload.price) {
+      setError("Original price must be higher than the current price, or leave it blank.");
       setSaving(false);
       return;
     }
@@ -213,6 +230,21 @@ export default function ProductsBoard({ initialProducts }: { initialProducts: Pr
           </div>
         </div>
         <div>
+          <label className="label">Original price (optional)</label>
+          <input
+            type="number"
+            step="0.01"
+            className="input"
+            placeholder="Leave blank if not on sale"
+            value={form.compareAtPrice}
+            onChange={(e) => setForm({ ...form, compareAtPrice: e.target.value })}
+          />
+          <p className="mt-1 text-xs text-ink/50">
+            Set this higher than Price to show a strikethrough price and % off
+            badge on the product page. Leave blank for no discount.
+          </p>
+        </div>
+        <div>
           <label className="label">Sizes (comma separated)</label>
           <input
             className="input"
@@ -312,45 +344,62 @@ export default function ProductsBoard({ initialProducts }: { initialProducts: Pr
       </form>
 
       <div className="space-y-2">
-        {products.map((p) => (
-          <div key={p.id} className="card p-3 flex items-center justify-between gap-3">
-            <div className="flex items-center gap-3">
-              {p.image_url && (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={p.image_url}
-                  alt={p.name}
-                  className="h-14 w-14 rounded object-cover bg-line/40"
-                />
-              )}
-              <div>
-                <p className="font-medium">
-                  {p.name}{" "}
-                  {!p.is_active && (
-                    <span className="status-pill bg-line text-ink/60 ml-1">Inactive</span>
-                  )}
-                  {p.is_category_image && (
-                    <span className="status-pill bg-line text-ink/60 ml-1">
-                      Category image
-                    </span>
-                  )}
-                </p>
-                <p className="text-sm text-ink/60">
-                  ₹{Number(p.price).toFixed(2)} · Stock: {p.stock}
-                  {p.sizes?.length ? ` · Sizes: ${p.sizes.join(", ")}` : ""}
-                </p>
+        {products.map((p) => {
+          const hasDiscount = p.compare_at_price && Number(p.compare_at_price) > Number(p.price);
+          const discountPercent = hasDiscount
+            ? Math.round((1 - Number(p.price) / Number(p.compare_at_price)) * 100)
+            : 0;
+          return (
+            <div key={p.id} className="card p-3 flex items-center justify-between gap-3">
+              <div className="flex items-center gap-3">
+                {p.image_url && (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={p.image_url}
+                    alt={p.name}
+                    className="h-14 w-14 rounded object-cover bg-line/40"
+                  />
+                )}
+                <div>
+                  <p className="font-medium">
+                    {p.name}{" "}
+                    {!p.is_active && (
+                      <span className="status-pill bg-line text-ink/60 ml-1">Inactive</span>
+                    )}
+                    {p.is_category_image && (
+                      <span className="status-pill bg-line text-ink/60 ml-1">
+                        Category image
+                      </span>
+                    )}
+                    {hasDiscount && (
+                      <span className="status-pill bg-green-100 text-green-700 ml-1">
+                        {discountPercent}% off
+                      </span>
+                    )}
+                  </p>
+                  <p className="text-sm text-ink/60">
+                    ₹{Number(p.price).toFixed(2)}
+                    {hasDiscount && (
+                      <span className="line-through text-ink/40 ml-1.5">
+                        ₹{Number(p.compare_at_price).toFixed(2)}
+                      </span>
+                    )}
+                    {" "}· Stock: {p.stock}
+                    {p.sizes?.length ? ` · Sizes: ${p.sizes.join(", ")}` : ""}
+                  </p>
+                </div>
+              </div>
+              <div className="flex gap-2 shrink-0">
+                <button onClick={() => startEdit(p)} className="btn-secondary">
+                  Edit
+                </button>
+                <button onClick={() => toggleActive(p)} className="btn-secondary">
+                  {p.is_active ? "Deactivate" : "Activate"}
+                </button>
               </div>
             </div>
-            <div className="flex gap-2 shrink-0">
-              <button onClick={() => startEdit(p)} className="btn-secondary">
-                Edit
-              </button>
-              <button onClick={() => toggleActive(p)} className="btn-secondary">
-                {p.is_active ? "Deactivate" : "Activate"}
-              </button>
-            </div>
-          </div>
-        ))}
+          );
+        })}
         {products.length === 0 && <p className="text-ink/60">No products yet — add one.</p>}
       </div>
     </div>
