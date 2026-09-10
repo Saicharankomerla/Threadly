@@ -15,6 +15,7 @@ type Product = {
   category: string | null;
   is_active: boolean;
   is_category_image: boolean;
+  deleted_at: string | null;
 };
 
 const emptyForm = {
@@ -184,6 +185,27 @@ export default function ProductsBoard({ initialProducts }: { initialProducts: Pr
     setProducts((prev) =>
       prev.map((x) => (x.id === p.id ? { ...x, is_active: !x.is_active } : x))
     );
+  }
+
+  // Soft delete: hides the product everywhere (site + this list) but keeps
+  // the row intact so past orders / reviews that reference it still work.
+  async function handleDelete(p: Product) {
+    const confirmed = window.confirm(
+      `Delete "${p.name}"? It will be removed from the shop and this list, but past orders that included it will be unaffected. This can be undone later from the database if needed.`
+    );
+    if (!confirmed) return;
+
+    const { error } = await supabase
+      .from("products")
+      .update({ is_active: false, deleted_at: new Date().toISOString() })
+      .eq("id", p.id);
+    if (error) {
+      alert(error.message);
+      return;
+    }
+
+    setProducts((prev) => prev.filter((x) => x.id !== p.id));
+    if (editingId === p.id) resetForm();
   }
 
   return (
@@ -395,6 +417,12 @@ export default function ProductsBoard({ initialProducts }: { initialProducts: Pr
                 </button>
                 <button onClick={() => toggleActive(p)} className="btn-secondary">
                   {p.is_active ? "Deactivate" : "Activate"}
+                </button>
+                <button
+                  onClick={() => handleDelete(p)}
+                  className="btn-secondary text-red-600 hover:bg-red-50"
+                >
+                  Delete
                 </button>
               </div>
             </div>

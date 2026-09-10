@@ -10,6 +10,7 @@ export default async function AdminProductsPage() {
   const { data: products } = await supabase
     .from("products")
     .select("*")
+    .is("deleted_at", null)
     .order("created_at", { ascending: false });
 
   return (
