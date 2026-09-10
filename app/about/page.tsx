@@ -5,7 +5,16 @@ export default function AboutPage() {
     <div className="max-w-3xl">
       <h1 className="font-display text-3xl mb-10">About Komerla</h1>
 
-      <div className="grid sm:grid-cols-[1fr_1.1fr] gap-8 sm:gap-12 items-center mb-16">
+      <h2 className="font-display text-xl mb-4">About us</h2>
+      <p className="text-ink/80 leading-relaxed mb-16 max-w-2xl">
+        Komerla is run by a small, hands-on team who personally manage every part of the
+        process — from sourcing pieces to packing and delivering each order ourselves. No
+        call centers, no outsourced warehouses — just us.
+      </p>
+
+      <h2 className="font-display text-xl mb-6">Our Team</h2>
+
+      <div className="grid sm:grid-cols-[1fr_1.1fr] gap-8 sm:gap-12 items-center mb-10">
         <div className="relative aspect-[4/5] w-full overflow-hidden bg-line/40">
           <Image
             src="/founder.jpg"
@@ -32,16 +41,14 @@ export default function AboutPage() {
         </div>
       </div>
 
-      <h2 className="font-display text-xl mb-6">Team</h2>
-
       <div className="flex items-center gap-6 mb-16">
-        <div className="relative h-36 w-36 sm:h-44 sm:w-44 flex-shrink-0 overflow-hidden rounded-full bg-line/40">
+        <div className="relative h-44 w-44 sm:h-56 sm:w-56 flex-shrink-0 overflow-hidden bg-line/40">
           <Image
             src="/team/shakeer.jpg"
             alt="Shakeer"
             fill
             className="object-cover"
-            sizes="176px"
+            sizes="224px"
           />
         </div>
         <div>
@@ -55,6 +62,7 @@ export default function AboutPage() {
         </div>
       </div>
 
+      <h2 className="font-display text-xl mb-4">About Komerla</h2>
       <div className="max-w-2xl space-y-5 text-ink/80 leading-relaxed">
         <p>
           Komerla is a fashion house built on a simple idea: great style shouldn't come with markup, guesswork, or middlemen.
