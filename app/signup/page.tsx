@@ -12,6 +12,7 @@ export default function SignupPage() {
 
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -25,7 +26,7 @@ export default function SignupPage() {
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
-      options: { data: { full_name: fullName } },
+      options: { data: { full_name: fullName, phone } },
     });
 
     setLoading(false);
@@ -80,6 +81,18 @@ export default function SignupPage() {
             className="input"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+          />
+        </div>
+        <div>
+          <label className="label">Mobile number</label>
+          <input
+            type="tel"
+            required
+            className="input"
+            placeholder="10-digit mobile number"
+            pattern="[0-9]{10}"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
           />
         </div>
         <div>
