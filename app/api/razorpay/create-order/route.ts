@@ -46,7 +46,7 @@ export async function POST(req: NextRequest) {
   }
 
   const productById = new Map(products.map((p) => [p.id, p]));
-  let total = 0;
+  let productTotal = 0;
 
   for (const item of rawItems) {
     const product = productById.get(item.product_id);
@@ -64,8 +64,27 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
-    total += Number(product.price) * qty;
+    productTotal += Number(product.price) * qty;
   }
+
+  // Pull the current delivery charge and platform fee from settings —
+  // never from the browser, so the amount charged always matches what's
+  // actually configured right now.
+  const { data: settingsRows, error: settingsError } = await supabase
+    .from("app_settings")
+    .select("key, value")
+    .in("key", ["delivery_charge", "platform_fee_enabled", "platform_fee_amount"]);
+
+  if (settingsError || !settingsRows) {
+    return NextResponse.json({ error: "Could not load pricing settings." }, { status: 500 });
+  }
+
+  const settings = Object.fromEntries(settingsRows.map((r) => [r.key, r.value]));
+  const deliveryCharge = Number(settings.delivery_charge ?? 0);
+  const platformFeeEnabled = Boolean(settings.platform_fee_enabled);
+  const platformFee = platformFeeEnabled ? Number(settings.platform_fee_amount ?? 0) : 0;
+
+  const total = productTotal + deliveryCharge + platformFee;
 
   if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) {
     return NextResponse.json(
@@ -94,6 +113,11 @@ export async function POST(req: NextRequest) {
       amount: razorpayOrder.amount,
       currency: razorpayOrder.currency,
       key_id: process.env.RAZORPAY_KEY_ID,
+      // Breakdown for display and to pass through to /api/orders afterwards
+      product_total: productTotal,
+      delivery_charge: deliveryCharge,
+      platform_fee: platformFee,
+      total,
     });
   } catch (err: any) {
     console.error("Razorpay order creation failed:", err);

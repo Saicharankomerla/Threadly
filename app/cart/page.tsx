@@ -1,11 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import Script from "next/script";
 import { useCart } from "@/lib/cart-context";
+
+type FeeSettings = {
+  delivery_charge: number;
+  platform_fee_enabled: boolean;
+  platform_fee_amount: number;
+};
 
 declare global {
   interface Window {
@@ -39,6 +45,23 @@ export default function CartPage() {
   const [notes, setNotes] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [fees, setFees] = useState<FeeSettings | null>(null);
+
+  useEffect(() => {
+    fetch("/api/settings")
+      .then((res) => res.json())
+      .then((data) => {
+        if (!data.error) setFees(data);
+      })
+      .catch(() => {
+        // If this fails, we just don't show a breakdown — the real total
+        // still gets computed correctly server-side at payment time.
+      });
+  }, []);
+
+  const platformFee = fees?.platform_fee_enabled ? fees.platform_fee_amount : 0;
+  const deliveryCharge = fees?.delivery_charge ?? 0;
+  const grandTotal = totalPrice + platformFee + deliveryCharge;
 
   // Combine the structured fields into one clean formatted string —
   // this is what actually gets saved as delivery_address, so nothing
@@ -120,6 +143,8 @@ export default function CartPage() {
                 razorpay_order_id: response.razorpay_order_id,
                 razorpay_payment_id: response.razorpay_payment_id,
                 razorpay_signature: response.razorpay_signature,
+                delivery_charge: createData.delivery_charge,
+                platform_fee: createData.platform_fee,
               }),
             });
 
@@ -346,15 +371,31 @@ export default function CartPage() {
               />
             </div>
 
-            <div className="border-t border-line pt-3 flex justify-between font-medium">
-              <span>Total</span>
-              <span>₹{totalPrice.toFixed(2)}</span>
+            <div className="border-t border-line pt-3 space-y-1.5 text-sm">
+              <div className="flex justify-between text-ink/70">
+                <span>Product total</span>
+                <span>₹{totalPrice.toFixed(2)}</span>
+              </div>
+              {platformFee > 0 && (
+                <div className="flex justify-between text-ink/70">
+                  <span>Platform fee</span>
+                  <span>₹{platformFee.toFixed(2)}</span>
+                </div>
+              )}
+              <div className="flex justify-between text-ink/70">
+                <span>Delivery charge</span>
+                <span>₹{deliveryCharge.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between font-medium text-base pt-1.5 border-t border-line mt-1.5">
+                <span>Total amount</span>
+                <span>₹{grandTotal.toFixed(2)}</span>
+              </div>
             </div>
 
             {error && <p className="text-sm text-red-600">{error}</p>}
 
             <button type="submit" disabled={loading} className="btn-primary w-full">
-              {loading ? "Processing…" : "Pay & place order"}
+              {loading ? "Processing…" : `Pay ₹${grandTotal.toFixed(2)}`}
             </button>
             <p className="text-xs text-ink/50 text-center">
               Secure payment powered by Razorpay.
