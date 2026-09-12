@@ -76,7 +76,7 @@ export default function ReviewsList({ reviews }: { reviews: Review[] }) {
                       key={i}
                       src={url}
                       controls
-                      className="h-24 w-24 object-cover rounded bg-line/40"
+                      className="h-40 w-40 object-cover rounded bg-line/40"
                     />
                   ) : (
                     // eslint-disable-next-line @next/next/no-img-element
@@ -84,7 +84,7 @@ export default function ReviewsList({ reviews }: { reviews: Review[] }) {
                       key={i}
                       src={url}
                       alt="Review photo"
-                      className="h-24 w-24 object-cover rounded bg-line/40"
+                      className="h-40 w-40 object-cover rounded bg-line/40"
                     />
                   )
                 )}
