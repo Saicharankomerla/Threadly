@@ -5,6 +5,7 @@ import PromoBar from "@/components/PromoBar";
 import Footer from "@/components/Footer";
 import { CartProvider } from "@/lib/cart-context";
 import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 export const metadata: Metadata = {
   title: "Komerla",
@@ -35,6 +36,7 @@ export default function RootLayout({
           <Footer />
         </CartProvider>
         <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
